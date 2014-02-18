@@ -5,5 +5,5 @@ title: alice
 
 This is an internet page on the world wide web! Hello.
 
-[/trance](/trance/) <br/>
-[/minecraft-clone](/minecraft-clone/)
+[/trance](/trance) <br/>
+[/minecraft-clone](/minecraft-clone)
