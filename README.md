@@ -1,1 +1,1 @@
-[This is I, and me is it.](http://alice0meta.github.io/)
+[This is a piece of me!](http://alice0meta.github.io/)
