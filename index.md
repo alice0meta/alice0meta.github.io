@@ -5,6 +5,6 @@ title: alice
 
 This is an internet page on the world wide web! Hello.
 
-[> sim](/sim/)
-
 [> timer](/timer/)
+
+[> sim](/sim/)

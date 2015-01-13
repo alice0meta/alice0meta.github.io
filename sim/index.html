@@ -22,13 +22,17 @@ var print = console.log.bind(console)
 var X = 60
 var Y = 30
 
-var board = _.range(Y).map(function(v){return _.range(X).map(function(){return false})})
+var empty_board = function(){return _.range(Y).map(function(v){return _.range(X).map(function(){return false})})}
+var rand_board = function(){return _.range(Y).map(function(v){return _.range(X).map(function(){return Math.random()<0.5})})}
+
+var board = rand_board()
 var loop_token
 
 $('body').html([
 	$('<table>').html(_.range(Y).map(function(v){return $('<tr>').html(_.range(X).map(function(v,i){return $('<td>')}))})),
 	$('<button id="pause">go</button>'),
 	$('<input id="interval" value="0.2"></input>'),
+	$('<button id="clear">clear</button>'),
 	$('<button id="randomize">randomize</button>'),
 	])
 
@@ -37,7 +41,8 @@ $('#pause').on('click',function(){
 	$(this).text(loop_token? 'go' : 'pause')
 	if (loop_token) {clearInterval(loop_token); loop_token = null} else loop_token = setInterval(loop,parseFloat($('#interval').val())*1000)})
 $('#interval').on('change',function(){if (loop_token) {clearInterval(loop_token); loop_token = setInterval(loop,parseFloat($('#interval').val())*1000)}})
-$('#randomize').on('click',function(){board = _.range(Y).map(function(v){return _.range(X).map(function(){return Math.random()<0.5})}); regen_all()})
+$('#clear').on('click',function(){board = empty_board(); regen_all()})
+$('#randomize').on('click',function(){board = rand_board(); regen_all()})
 
 var regen = function(x,y){$('tr').eq(y).find('td').eq(x).toggleClass('on',!!board[y][x])}
 var regen_all = function(){_.range(Y).map(function(y){_.range(X).map(function(x){regen(x,y)})})}
@@ -49,4 +54,6 @@ var tick = function(board){
 		return n===3 || (v && n===4)})})}
 
 var loop = function(){board = tick(board); regen_all()}
+
+regen_all()
 </script>
