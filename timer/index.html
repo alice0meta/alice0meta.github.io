@@ -43,18 +43,29 @@ $.on_away(function(){
 /*
 spec:
 
-* doesn't fuck up if the machine sleeps or is otherwise inactive (probably don't even bother rendering unless the tab is active)
-
-grab old timer code 'cause we really want a laptop timer that doesn't fuck up on sleeping, like http://www.online-stopwatch.com/ but better
-it'd be really cool if it was like transparent-favicon.info/favicon.ico?timer
-	and that we can edit, and stuff, to help account for distraction/failure
-	"make a clock / duration / timer system to help us think in kiloseconds and such?"
+✓~ doesn't fuck up if the machine sleeps or is otherwise inactive
+* like http://www.online-stopwatch.com/ but better
+* can edit and stuff to help account for distraction/failure
+* should help user think in kiloseconds and such
+* would be great if it is an excellent pomodoro timer (outdoing http://tomato-timer.com/)
+	* would be crazy awesome if it integrated with beeminder
+* title should contain useful information
+	document.title =
+	"current time"
+	"is pomodoro" -> favicon
+		var link = document.createElement('link');
+		link.type = 'image/x-icon';
+		link.rel = 'shortcut icon';
+		link.href = 'http://www.stackoverflow.com/favicon.ico';
+		document.getElementsByTagName('head')[0].appendChild(link);
 
 so, let's sketch this out
 
 we've really liked the terminal aesthetic.
 
 however we definitely want this to be a chrome tab, since chrome is the place we can always have stack
+
+whoops looks like http://www.timer-tab.com/ is just better.
 */
 
 </script>
