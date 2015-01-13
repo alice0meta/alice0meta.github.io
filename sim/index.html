@@ -8,7 +8,6 @@
 	</style>
 	<script src="https://code.jquery.com/jquery-latest.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"></script>
-	<script>require('./'+require('path').basename(__filename,'.html'))</script>
 </head><body>
 </body></html>
 <script>
@@ -28,13 +27,15 @@ var loop_token
 
 $('body').html([
 	$('<table>').html(_.range(Y).map(function(v){return $('<tr>').html(_.range(X).map(function(v,i){return $('<td>')}))})),
-	$('<button id="pause">pause</button>'),
+	$('<button id="pause">go</button>'),
 	$('<input id="interval" value="0.2"></input>'),
 	$('<button id="randomize">randomize</button>'),
 	])
 
 $('table').on('click','td',function(){var x = $(this).index(); var y = $(this).parent().index(); board[y][x] = !board[y][x]; regen(x,y)})
-$('#pause').on('click',function(){if (loop_token) {clearInterval(loop_token); loop_token = null} else loop_token = setInterval(loop,parseFloat($('#interval').val())*1000)})
+$('#pause').on('click',function(){
+	$(this).text(loop_token? 'go' : 'pause')
+	if (loop_token) {clearInterval(loop_token); loop_token = null} else loop_token = setInterval(loop,parseFloat($('#interval').val())*1000)})
 $('#interval').on('change',function(){if (loop_token) {clearInterval(loop_token); loop_token = setInterval(loop,parseFloat($('#interval').val())*1000)}})
 $('#randomize').on('click',function(){board = _.range(Y).map(function(v){return _.range(X).map(function(){return Math.random()<0.5})}); regen_all()})
 
