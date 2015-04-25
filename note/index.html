@@ -27,6 +27,7 @@ var url_params = (function(){
 	var t; while (t = re.exec(location.search.slice(1))) r[decode(t[1])] = decode(t[2])
 	return r})()
 
+document.title = url_params.v
 $('#note').html(url_params.v)
 
 </script>
