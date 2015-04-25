@@ -1,0 +1,32 @@
+<!DOCTYPE html><html><head><meta charset="utf-8">
+	<title>alice » note</title>
+	<style>
+		/* should be templated in */
+		body {background-color: #222; color: #fff; font-family: "Verdana"; font-size: 13px;}
+		a:visited {color: #bb7f00;}
+		a:hover, a:active, a:focus {color: #eeeeee;}
+		a {color: #ffb200; text-decoration: none;}
+
+		/* stuff */
+		#note {margin:20px; font-size:200%;}
+	</style>
+	<script src="https://code.jquery.com/jquery-latest.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"></script>
+</head><body>
+	<a href="/">alice</a> » note
+	<div id='note'></div>
+</body></html>
+<script>
+
+var print = console.log.bind(console)
+
+var url_params = (function(){
+	var decode = function(v){return decodeURIComponent(v.replace(/\+/g,' '))}
+	var r = {}
+	var re = /([^&=]+)=?([^&]*)/g
+	var t; while (t = re.exec(location.search.slice(1))) r[decode(t[1])] = decode(t[2])
+	return r})()
+
+$('#note').html(url_params.v)
+
+</script>
