@@ -28,12 +28,16 @@ $.on_away = function(f){document.addEventListener('visibilitychange',function(){
 var hash = decodeURIComponent(location.hash.replace(/^#/,''))//.replace(/\+/g,' '))
 
 $('#note').val(hash)
-location.hash = '#'+(document.title = hash = $('#note').val())
+var set_hash = function(){
+	hash = $('#note').val()
+	document.title = hash || 'alice » note'
+	location.hash = '#'+hash
+	}
+set_hash()
 
 ;(function(){
 	var λ = function(){
-		if (hash !== $('#note').val())
-			location.hash = '#'+(document.title = hash = $('#note').val())
+		if (hash !== $('#note').val()) set_hash()
 		if (!document.hidden) setTimeout(λ,100) }
 	λ()
 	$.on_view(λ)
