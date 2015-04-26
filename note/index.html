@@ -8,26 +8,35 @@
 		a {color: #ffb200; text-decoration: none;}
 
 		/* stuff */
-		#note {margin:20px; font-size:200%;}
+		#note {margin:20px; font-size:200%; display:block; width:100%; background-color:inherit; color:inherit; border:none; outline:none;}
 	</style>
 	<script src="https://code.jquery.com/jquery-latest.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"></script>
 </head><body>
 	<a href="/">alice</a> » note
-	<div id='note'></div>
+	<input id="note" type="text" autofocus></input>
 </body></html>
 <script>
 
 var print = console.log.bind(console)
 
-var url_params = (function(){
-	var decode = function(v){return decodeURIComponent(v.replace(/\+/g,' '))}
-	var r = {}
-	var re = /([^&=]+)=?([^&]*)/g
-	var t; while (t = re.exec(location.search.slice(1))) r[decode(t[1])] = decode(t[2])
-	return r})()
+$.on_view = function(f){document.addEventListener('visibilitychange',function(){if (!document.hidden) f()})}
+$.on_away = function(f){document.addEventListener('visibilitychange',function(){if (document.hidden) f()})}
 
-document.title = url_params.v
-$('#note').html(url_params.v)
+// --------- body --------- //
+
+var hash = decodeURIComponent(location.hash.replace(/^#/,''))//.replace(/\+/g,' '))
+
+$('#note').val(hash)
+location.hash = '#'+(document.title = hash = $('#note').val())
+
+;(function(){
+	var λ = function(){
+		if (hash !== $('#note').val())
+			location.hash = '#'+(document.title = hash = $('#note').val())
+		if (!document.hidden) setTimeout(λ,100) }
+	λ()
+	$.on_view(λ)
+	})()
 
 </script>
