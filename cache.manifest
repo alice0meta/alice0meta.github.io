@@ -1,7 +1,9 @@
 CACHE MANIFEST
-# revision 0
+# revision 1
 /favicon.ico
 /index.html
 /note/index.html
 /sim/index.html
 /timer/index.html
+https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js
+https://code.jquery.com/jquery-latest.js
