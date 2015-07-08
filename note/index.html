@@ -9,13 +9,13 @@
 		a {color: #ffb200; text-decoration: none;}
 
 		/* stuff */
-		#note {margin:20px; font-size:200%; display:block; width:100%; background-color:inherit; color:inherit; border:none; outline:none;}
+		#note {margin:20px; font-size:200%; display:block; width:calc(100% - 40px); resize:vertical; background-color:inherit; color:inherit; border:none; outline:none;}
 	</style>
 	<script src="https://code.jquery.com/jquery-latest.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"></script>
 </head><body>
 	<a href="/">alice</a> » note
-	<input id="note" type="text" autofocus></input>
+	<textarea id="note" autofocus></textarea>
 </body></html>
 <script>
 
@@ -32,16 +32,14 @@ $('#note').val(hash)
 var set_hash = function(){
 	hash = $('#note').val()
 	document.title = hash || 'alice » note'
-	location.hash = '#'+hash
+	// (location.hash === '#'+hash) || (
+	location.hash = '#'+hash //)
 	}
 set_hash()
 
 ;(function(){
-	var λ = function(){
-		if (hash !== $('#note').val()) set_hash()
-		if (!document.hidden) setTimeout(λ,100) }
-	λ()
-	$.on_view(λ)
+	var λ = function(){hash === $('#note').val() || set_hash(); if (!document.hidden) setTimeout(λ,100)}
+	λ(); $.on_view(λ)
 	})()
 
 </script>
