@@ -29,12 +29,12 @@ $.on_away = function(f){document.addEventListener('visibilitychange',function(){
 var hash = decodeURIComponent(location.hash.replace(/^#/,''))//.replace(/\+/g,' '))
 
 $('#note').val(hash)
-var set_hash = function(){
+var set_hash = _.throttle(function(){
 	hash = $('#note').val()
 	document.title = hash || 'alice » note'
 	// (location.hash === '#'+hash) || (
 	location.hash = '#'+hash //)
-	}
+	},600)
 set_hash()
 
 ;(function(){
