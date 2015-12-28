@@ -1,0 +1,15 @@
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<!-- <!DOCTYPE html><html manifest="cache.manifest"><head><meta charset="utf-8"> -->
+	<title>alice » txt</title>
+	<script src="https://code.jquery.com/jquery-latest.js"></script>
+	<script> $(()=>{
+		window.pastebin_jsonp = ι => {
+			$('pre').text(ι)
+		}
+		var id = location.hash.replace(/^#/,'')
+		$.ajax({url:"http://pastebin.com/raw?i="+id, dataType:"jsonp"})
+		$('title').text(id+'.txt')
+	}) </script>
+</head><body>
+	<pre style="word-wrap: break-word; white-space: pre-wrap;">...</pre></body>
+</body></html>
