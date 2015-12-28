@@ -20,7 +20,7 @@
 			var t = document.createElement('script'); t.src = "http://pastebin.com/embed_js/"+ι; document.getElementsByTagName('head')[0].appendChild(t) }
 		var format = ι => {
 			var URL = /\b(?:https?:\/\/|(?:file|mailto):)(?:[^\s“”"<>]*\([^\s“”"<>]*\))?(?:[^\s“”"<>]*[^\s“”"<>)\]}⟩?!,.:;])?/g
-			var parse_alicetext = ι => _.zip(ι.split(URL).map(ι => ({type:'text', ι})), ι.match(URL).map(ι => ({type:'url', ι})))._.flatten(true).filter(ι => !(ι === undefined || (ι.type === 'text' && ι.ι === '')))
+			var parse_alicetext = ι => _.zip(ι.split(URL).map(ι => ({type:'text', ι})), (ι.match(URL)||[]).map(ι => ({type:'url', ι})))._.flatten(true).filter(ι => !(ι === undefined || (ι.type === 'text' && ι.ι === '')))
 			return parse_alicetext(ι).map(ι =>
 				ι.type === 'text'? encode_entities(ι.ι) :
 				ι.type === 'url'? '<a target="_blank" href="'+ι.ι+'">'+encode_entities(ι.ι)+'</a>':
