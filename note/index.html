@@ -22,6 +22,7 @@
 <script>
 
 var print = console.log.bind(console)
+Object.defineProperty(Object.prototype,'_',{get:function(){return _(this)}, configurable:true})
 
 $.on_view = function(f){document.addEventListener('visibilitychange',function(){if (!document.hidden) f()})}
 $.on_away = function(f){document.addEventListener('visibilitychange',function(){if (document.hidden) f()})}
@@ -31,12 +32,12 @@ $.on_away = function(f){document.addEventListener('visibilitychange',function(){
 var hash = decodeURIComponent(location.hash.replace(/^#/,''))//.replace(/\+/g,' '))
 
 $('#note').val(hash)
-var set_hash = _.throttle(function(){
+var set_hash = function(){
 	hash = $('#note').val()
 	document.title = hash || 'alice » note'
 	// (location.hash === '#'+hash) || (
 	location.hash = '#'+hash //)
-	},800)
+	}._.throttle(800)
 set_hash()
 
 ;(function(){
