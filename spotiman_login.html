@@ -1,0 +1,29 @@
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<!-- <!DOCTYPE html><html manifest="cache.manifest"><head><meta charset="utf-8"> -->
+	<title>spotiman login</title>
+	<style>
+		/* --- should be templated in --- */
+		/* font and color */
+		body {background-color: #272822; color: #f8f8f2; font-family: "Verdana"; font-size: 13px;}
+		a:visited {color: #bb7f00;}
+		a:hover, a:active, a:focus {color: #eeeeee;}
+		a {color: #ffb200; text-decoration: none;}
+
+		/* --- specific to this file --- */
+		/* stuff */
+		#note {margin:20px; font-size:200%; display:block; width:calc(100% - 40px); height:735px; resize:none; background-color:inherit; color:inherit; border:none; outline:none; line-height:125%;}
+	</style>
+	<script src="https://code.jquery.com/jquery-latest.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"></script>
+</head><body>
+	» spotiman login
+	<textarea id="note" autofocus></textarea>
+	<div id="colortest" style="margin:20px;"></div>
+</body></html>
+<script>
+
+var querystring = ι=>{ var t = RegExp('[?&]'+ι+'=([^&]*)').exec(window.location.search); return t && decodeURIComponent(t[1].replace(/\+/g, ' ')) }
+
+$('#note').val('authentication code: '+querystring('code'))
+
+</script>
