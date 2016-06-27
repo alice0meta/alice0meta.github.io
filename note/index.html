@@ -20,6 +20,7 @@
 </head><body>
 	<a href="/">alice</a> » note
 	<textarea id="note" autofocus></textarea>
+	<div id="colortest" style="margin:20px;"></div>
 </body></html>
 <script>
 
@@ -29,21 +30,32 @@ Object.defineProperty(Object.prototype,'_',{get:function(){return _(this)}, conf
 $.on_view = function(f){document.addEventListener('visibilitychange',function(){if (!document.hidden) f()})}
 $.on_away = function(f){document.addEventListener('visibilitychange',function(){if (document.hidden) f()})}
 
-// --------- body --------- //
-
+// ---------------------------------- body ---------------------------------- //
 var hash = decodeURIComponent(location.hash.replace(/^#/,''))//.replace(/\+/g,' '))
+
+// colortest is not just a test. colortest is the future.
+var colortest = function(){
+	var text = $('#note').val()
+	if (!text.match(/^colortest /)) return
+	$('body,#note').css('font-family','Menlo-Regular').css('font-size','14px')
+	$('#note').css('height','200px')
+	var t = text.split(/\s+/g); $('body').css('background-color',t[1]).css('color',t[2])
+	$('#colortest').html(text.replace(/^ +/mg,function(ι){return ι.replace(/./g,'\xa0')}).replace(/\n/g,'</br>').replace(/#[\w]{3,6}/g,function(ι){
+		if (!ι.match(/^#([0-9a-f]{3}|[0-9a-f]{6})/i)) return ι
+		return '<span style="color:'+ι+';">'+ι+'</span>'
+		}))
+	}._.throttle(100)
 
 $('#note').val(hash)
 var set_hash = function(){
 	hash = $('#note').val()
 	document.title = hash || 'alice » note'
-	// (location.hash === '#'+hash) || (
-	location.hash = '#'+hash //)
+	location.hash === '#'+hash || (location.hash = '#'+hash)
 	}._.throttle(800)
-set_hash()
+set_hash(); colortest()
 
 ;(function(){
-	var λ = function(){hash === $('#note').val() || set_hash(); if (!document.hidden) setTimeout(λ,0.1*1e3)}
+	var λ = function(){hash === $('#note').val() || (set_hash(), colortest()); if (!document.hidden) setTimeout(λ,0.1*1e3)}
 	λ(); $.on_view(λ)
 	})()
 

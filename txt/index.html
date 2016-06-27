@@ -13,26 +13,26 @@
 	</style>
 	<script>
 		Object.defineProperty(Object.prototype,'_',{get:function(){return _(this)}, configurable:true})
-		var encode_entities = ι => ι.replace(/[&"'<>]/g, ι => ({'&':'&amp;', '"':'&quot;', '\'':'&#39;', '<':'&lt;', '>':'&gt;'}[ι]))
-		var decode_entities = ι => {var t = document.createElement('textarea'); t.innerHTML = ι; return t.value}
-		var dl_pastebin = (ι,f) => {
+		var encode_entities = ι=> ι.replace(/[&"'<>]/g, ι=> ({'&':'&amp;', '"':'&quot;', '\'':'&#39;', '<':'&lt;', '>':'&gt;'}[ι]))
+		var decode_entities = ι=> {var t = document.createElement('textarea'); t.innerHTML = ι; return t.value}
+		var dl_pastebin = (ι,f)=> {
 			var o = document.write
-			document.write = ι => {
+			document.write = ι=> {
 				document.write = o
-				ι = decode_entities(ι.match(/<div class="de.">.*?<\/div>/g).map(ι => ι.match(/^<div class="de.">(.*?)<\/div>$/)[1]).join("\n"))
+				ι = decode_entities(ι.match(/<div class="de.">.*?<\/div>/g).map(ι=> ι.match(/^<div class="de.">(.*?)<\/div>$/)[1]).join("\n"))
 				f(ι) }
 			var t = document.createElement('script'); t.src = "http://pastebin.com/embed_js/"+ι; document.getElementsByTagName('head')[0].appendChild(t) }
-		var format = ι => {
+		var format = ι=> {
 			var URL = /\b(?:https?:\/\/|(?:file|mailto):)(?:[^\s“”"<>]*\([^\s“”"<>]*\))?(?:[^\s“”"<>]*[^\s“”"<>)\]}⟩?!,.:;])?/g
-			var parse_alicetext = ι => _.zip(ι.split(URL).map(ι => ({type:'text', ι})), (ι.match(URL)||[]).map(ι => ({type:'url', ι})))._.flatten(true).filter(ι => !(ι === undefined || (ι.type === 'text' && ι.ι === '')))
-			return parse_alicetext(ι).map(ι =>
+			var parse_alicetext = ι=> _.zip(ι.split(URL).map(ι=> ({type:'text', ι})), (ι.match(URL)||[]).map(ι=> ({type:'url', ι})))._.flatten(true).filter(ι=> !(ι === undefined || (ι.type === 'text' && ι.ι === '')))
+			return parse_alicetext(ι).map(ι=>
 				ι.type==='text'? encode_entities(ι.ι) :
 				ι.type==='url'? '<a target="_blank" href="'+encodeURI(ι.ι)+'">'+encode_entities(ι.ι)+'</a>':
 					(()=>{throw Error()})()
 				).join('') }
 
 		var id = location.hash.replace(/^#/,'')
-		dl_pastebin(id,ι => {$('body').html(format(ι).split('\n').map(ι => '<p style="margin-left:'+(t=ι.match(/^[  ]*/)[0].length+2)+'ch; text-indent: -'+t+'ch;">'+ι+'</p>').join(''))})
+		dl_pastebin(id,ι=> {$('body').html(format(ι).split('\n').map(ι=> '<p style="margin-left:'+(t=ι.match(/^[  ]*/)[0].length+2)+'ch; text-indent: -'+t+'ch;">'+ι+'</p>').join(''))})
 		$('title').text(id+'.txt')
 	</script>
 </head><body>
