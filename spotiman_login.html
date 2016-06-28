@@ -24,6 +24,6 @@
 
 var querystring = ι=>{ var t = RegExp('[?&]'+ι+'=([^&]*)').exec(window.location.search); return t && decodeURIComponent(t[1].replace(/\+/g, ' ')) }
 
-$('#note').val('authentication code: '+querystring('code'))
+$('#note').val(querystring('code')+'')
 
 </script>
