@@ -14,7 +14,7 @@ Function.prototype.P = function(...a1){ var ι=this; return function(...a2){retu
 var animation_frame_loop = f=> window.requestAnimationFrame(now=> f(now/1e3, animation_frame_loop.P(f)))
 
 // ------------------------ //
-var cols = chroma.scale('red e8b907 green 11f c000e8 red'.split(' ')).mode('lab')
+var cols = chroma.scale('red e8b907 green 11f c000e8 red'.split(' ')).mode('hsl')
 
 animation_frame_loop((now,cb)=>{
 	$('body').css('background', cols(now / 40 % 1)+'')
