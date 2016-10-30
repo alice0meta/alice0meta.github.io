@@ -2,7 +2,7 @@
 
 <!DOCTYPE html><html><head><meta charset="utf-8">
 <!-- <!DOCTYPE html><html manifest="cache.manifest"><head><meta charset="utf-8"> -->
-	<title>alice » note</title>
+	<title>note</title>
 	<style>
 		/* --- should be templated in --- */
 		/* font and color */
@@ -49,7 +49,7 @@ var colortest = function(){
 $('#note').val(hash)
 var set_hash = function(){
 	hash = $('#note').val()
-	document.title = hash || 'alice » note'
+	document.title = hash || 'note'
 	location.hash === '#'+hash || (location.hash = '#'+hash)
 	}._.throttle(800)
 set_hash(); colortest()

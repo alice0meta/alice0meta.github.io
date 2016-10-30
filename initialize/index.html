@@ -1,0 +1,23 @@
+<!DOCTYPE html><html><head><meta charset="utf-8">
+	<title>initialize</title>
+	<script src="https://code.jquery.com/jquery-latest.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"></script>
+	<script src="chroma.min.js"></script>
+</head><body>
+</body></html>
+<script>
+// ------- builtins ------- //
+Object.defineProperty(Object.prototype,'_',{get:function(){return _(this)}, configurable:true})
+Function.prototype.P = function(...a1){ var ι=this; return function(...a2){return ι.apply(this, a1.concat(a2)) } }
+
+// --------- utils -------- //
+var animation_frame_loop = f=> window.requestAnimationFrame(now=> f(now/1e3, animation_frame_loop.P(f)))
+
+// ------------------------ //
+var cols = chroma.scale('red e8b907 green 11f c000e8 red'.split(' ')).mode('lab')
+
+animation_frame_loop((now,cb)=>{
+	$('body').css('background', cols(now / 40 % 1)+'')
+	cb() })
+
+</script>
