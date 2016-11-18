@@ -1,0 +1,66 @@
+<!DOCTYPE html><html><head><meta charset="utf-8">
+	<title>readme</title>
+	<style>
+		body { margin:0; }
+		body { background-color:#323232; color:#d5d5cf; font-family:"Avenir Next"; font-size:28px; }
+		.title { font-family:"Futura"; font-size:25px; }
+		::selection { background:#0f0f0f; }
+	</style>
+	<script src="https://code.jquery.com/jquery-latest.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"></script>
+</head><body>
+	<div style="position:fixed; top:25px; text-align:center; width:100%;">
+		<div class="title" style="margin:0 auto; display:inline-block;"></div>
+	</div>
+	<div id="ι" style="margin:100px auto; width:750px;"></div>
+</body></html>
+<script>
+// -------------------------------- builtins -------------------------------- //
+Object.defineProperty(Object.prototype,'_',{get:function(){return _(this)}, configurable:true})
+min = Math.min; max = Math.max
+
+// -------------------------------------------------------------------------- //
+title = `README`
+text = `
+hi, ~me
+
+welcome to Terra. You’re stuck in a rather complex mmorpg. 7 billion human on carbon/oxygen, ten thousand weak AI gestalts on silicon.
+
+the gods are real, as in being useful allegory for the {configuration succession of atoms}; this runs deeper than most people think, except the crazies and the heroes
+
+armageddon could happen any time in the next 500 years
+
+some humans are gifted with extraordinary powers far beyond their kin, and a tenth of their number could save us if they worked together. but too many of them are assholes, so they usually don’t manage to form groups at all.
+
+um, i’m sorry - I. I would like to welcome you to a good place, but… It’s really scary here, kid. It’s a nightmare. You don’t wake up, or maybe you do but you have to sleep again, or maybe you’re only wondering about that because you’re crazy.
+
+At least it’s fun. At least *you* get a solidly decadent intellectual-elite life. When you get girls you get some of the more brilliant young scientist women of the 21st century. (Maybe. That could be a lie. (I don’t know!))
+
+and it’s a fascinating (mmo)rpg, with you as one of the ones who could be an interesting side-character,
+uh
+not that that matters o//o
+but! it’s got a fiendishly complex mathematics system?
+an alluringly reminiscent fiendishly complex arithmetic logic system?
+
+it’s got Dreams, love, and ten thousand breathtakingly interesting things
+
+im pretty sure i went *way* melodramatic in this letter …
+but uh
+this nightmare
+i really, really wish i could wake up
+but i can’t
+and i can face that
+of course i’ll face it
+i can’t get 100% completion, but i want to unlock as many of the bonus endings as possible; they combine and get better the more you unlock.
+we can build sand castles later, when we have more time; you want to build the grandest sand castle possible, right? the metaphor fits. :P
+`.trim()
+
+// -------------------------------------------------------------------------- //
+$('.title').text(title)
+$('#ι').append(text.split('\n').map(ι=> $('<div>').text(ι||'\xa0') ))
+
+$(window).scroll(function(){
+	$('.title').css({ opacity: 1 - min(max( 0, $(window).scrollTop() ), 40 )/40 })
+	})
+
+</script>
