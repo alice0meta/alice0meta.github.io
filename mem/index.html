@@ -16,8 +16,8 @@
 		/* stuff */
 		#note, #colortest {margin:20px; font-size:200%; display:block; width:calc(100% - 40px); height:2em; resize:none; background-color:inherit; color:inherit; border:none; outline:none; line-height:125%; font-family: BlinkMacSystemFont;}
 	</style>
-	<script src="https://code.jquery.com/jquery-latest.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 </head><body>
 	<a href="/">alice</a> » note
 	<textarea id="note" autofocus></textarea>
@@ -41,7 +41,7 @@ var colortest = function(){
 	$('body,#note').css('font-family','Menlo-Regular').css('font-size','14px')
 	$('#note').css('height','200px')
 	var t = text.split(/\s+/g); $('body').css('background-color',t[1]).css('color',t[2])
-	$('#colortest').html(text.replace(/^ +/mg,function(ι){return ι.replace(/./g,'\xa0')}).replace(/\n/g,'</br>').replace(/#[\w]{3,6}/g,function(ι){
+	$('#colortest').html(text.replace(/^ +/gm,function(ι){return ι.replace(/./g,'\xa0')}).replace(/\n/g,'</br>').replace(/#[\w]{3,6}/g,function(ι){
 		if (!ι.match(/^#([0-9a-f]{3}|[0-9a-f]{6})/i)) return ι
 		return '<span style="color:'+ι+';">'+ι+'</span>'
 		}))
