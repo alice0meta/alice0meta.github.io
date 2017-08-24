@@ -26,7 +26,7 @@
 <script>
 
 var print = console.log.bind(console)
-Object.defineProperty(Object.prototype,'_',{get:function(){return _(this)}, configurable:true})
+Object.defineProperty(Array.prototype,'_',{get:function(){return _(this)}, configurable:true})
 
 $.on_view = function(f){document.addEventListener('visibilitychange',function(){if (!document.hidden) f()})}
 $.on_away = function(f){document.addEventListener('visibilitychange',function(){if (document.hidden) f()})}
@@ -35,7 +35,7 @@ $.on_away = function(f){document.addEventListener('visibilitychange',function(){
 var hash = decodeURIComponent(location.hash.replace(/^#/,''))//.replace(/\+/g,' '))
 
 // colortest is not just a test. colortest is the future.
-var colortest = function(){
+var colortest = _(function(){
 	var text = $('#note').val()
 	if (!text.match(/^colortest /)) return
 	$('body,#note').css('font-family','Menlo-Regular').css('font-size','14px')
@@ -45,14 +45,14 @@ var colortest = function(){
 		if (!ι.match(/^#([0-9a-f]{3}|[0-9a-f]{6})/i)) return ι
 		return '<span style="color:'+ι+';">'+ι+'</span>'
 		}))
-	}._.throttle(100)
+	}).throttle(100)
 
 $('#note').val(hash)
-var set_hash = function(){
+var set_hash = _(function(){
 	hash = $('#note').val()
 	document.title = hash || 'alice » note'
 	location.hash === '#'+hash || (location.hash = '#'+hash)
-	}._.throttle(800)
+	}).throttle(800)
 
 ;(function(){
 // END COPIED
@@ -60,12 +60,12 @@ var set_hash = function(){
 	t(); $.on_view(t)
 	})()
 
-var color_desired = function(){
+var color_desired = _(function(){
 	var desired = 'α β γ δ ε ζ η θ ι κ λ μ ν ξ o π ρ σ τ υ φ χ ψ ω'
 	var text = $('#note').val()
 	var L = desired.length
-	$('#colortest').html(text.slice(0,L)._.zip(desired).filter(ι=>ι[0]).map(([a,b])=> '<span style="color:'+(a===b? '#0f0' : '#f00')+';">'+b+'</span>').join('') + text.slice(L))
-	}._.throttle(100)
+	$('#colortest').html(_(text.slice(0,L)).zip(desired).filter(ι=>ι[0]).map(([a,b])=> '<span style="color:'+(a===b? '#0f0' : '#f00')+';">'+b+'</span>').join('') + text.slice(L))
+	}).throttle(100)
 
 set_hash(); colortest(); color_desired()
 

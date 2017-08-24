@@ -7,7 +7,6 @@
 </body></html>
 <script>
 // ------- builtins ------- //
-Object.defineProperty(Object.prototype,'_',{get:function(){return _(this)}, configurable:true})
 Function.prototype.P = function(...a1){ var ι=this; return function(...a2){return ι.apply(this, a1.concat(a2)) } }
 
 // --------- utils -------- //
