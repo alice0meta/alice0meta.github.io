@@ -1,41 +1,67 @@
-// nice to have: use facebook api to get a list of your friends who also play this_is_our_sand
+############################## nice-to-have todos ##############################
+# use facebook api to get a list of your friends who also play this_is_our_sand
+# http://xirsys.com/ TURN server
+# bug: shit gets weird on the right
+# ciecam02 maybe? it's hard to tell how to do colors http://gramaz.io/d3-cam02/ https://en.wikipedia.org/wiki/Helmholtz%E2%80%93Kohlrausch_effect https://sites.google.com/site/clifframes/ciecam02plugin
+# favicon
+# if you click on an invisible area use a nearby color instead of black, also show which nearby color will be chosen
+# simple transition animations
 
-// nice to have http://xirsys.com/ TURN server
-
-// use https://github.com/peers/peerjs for p2p?
-
-// bug: keeping the mouse still, you get a strange fountain
-
-// nice to have: ciecam02 maybe? it's hard to tell how to do colors http://gramaz.io/d3-cam02/ https://en.wikipedia.org/wiki/Helmholtz%E2%80%93Kohlrausch_effect https://sites.google.com/site/clifframes/ciecam02plugin
-
-// favicon
-
-// -------------------------------- builtins -------------------------------- //
-_ ← require('underscore')
+################################### builtins ###################################
 E ← window
-Object.defineProperty(Array.prototype,'_',{get:λ(){↩ _(@)}, configurable:true})
-Object.defineProperty(Array.prototype,'-1',{get(){↩ @.length<1? undefined : @[@.length-1] },set(ι){ @.length<1 || (@[@.length-1] = ι) }, configurable:true})
+E.𐅯Set = (…ι)=> new Set(ι)
+E._u = E._ = require('underscore')
+⋯ ← ι=> _u.range(ι)
+≈ ← _u.isEqual
+≉ ← (a,b)=> ! ≈(a,b)
+Object.defineProperty(Array.prototype,'_',{get:λ(){↩ _(@) }, configurable:true})
+Object.defineProperty(Array.prototype,'‖',{get:λ(){↩ @.length }, configurable:true})
+Object.defineProperty(Array.prototype,'-1',{get(){↩ @.‖<1? ∅ : @[@.‖-1] },set(ι){ @.‖<1 || (@[@.‖-1] = ι) }, configurable:true})
 Object.defineProperty(Function.prototype,'X',{get(){ ι←@; ↩ λ(a){↩ ι.call(@,a) } }, configurable:true})
 cn ← {log:(…a)=>console.log(…a)}
-_(E).assign(_(Math).pick('abs','ceil','exp','floor','log10','log2','max','min','pow','round','sqrt','cos','sin','tan')); _(E).assign({ln:Math.log, π:Math.PI, τ:Math.PI*2})
+_(E).assign(_(Math).pick('abs','ceil','exp','floor','log10','log2','max','min','round','sqrt','cos','sin','tan'),{ln:Math.log, π:Math.PI, τ:Math.PI*2})
 Tnum ← ι=> typeof ι === 'number'
+Tfun ← ι=> typeof ι === 'function'
 random ← λ(ι){↩ arguments.length===0? Math.random() : Tnum(ι)? random()*ι |0 : _.sample(ι) }
-
-// ---------------------------------- utils --------------------------------- //
-numeric ← require('numeric')
+Π ← ι=> Tfun(ι) && /^(yes|\(yes,no\))=>/.test(ι+'')? new Promise(ι) : Promise.resolve(ι)
+def ← (o,name,ι)=>{
+	if (Tfun(ι)) ι = lazy(name,ι)
+	'configurable' in ι || (ι.configurable = true)
+	'value' in ι?
+		'writable' in ι || (ι.writable = true) :
+		'set' in ι || (ι.set = λ(ι){ def(@,name,{value:ι, enumerable:true}) })
+	Object.defineProperty(o,name,ι); ↩ o }
+__err_format ← (…a)=> Error(a.map(ι=> Tstr(ι)? ι : util_inspect_autodepth(ι)).join(' '))
 color ← require('color')
+color.interpolate_0 = (c,x)=>{ x *= c.‖; i ← x|0; r ← x-i; ↩ c[i%c.‖].mix(c[(i+1)%c.‖], 1-r) }
+Object.defineProperty(color.prototype,'i',{get(){ ι ← @.rgb().color; ↩ ( ι[0]<<24 | ι[1]<<16 | ι[2]<<8 | 0xff )>>>0 }})
+
+##################################### utils ####################################
+numeric ← require('numeric')
 hilbert_curve ← require('./hilbert_curve')
+AC ← new AudioContext()
 
-color.prototype.i = λ(){ ι ← @.rgb().color; ↩ ( ι[0]<<24 | ι[1]<<16 | ι[2]<<8 | 0xff )>>>0 }
+get_mouse_pos ← e=>{ t ← $(e.target).offset(); ↩ { x:e.pageX-t.left, y:e.pageY-t.top, time_nonstandard:e.timeStamp/1e3 } }
 
-perf_now ← ι=> ( performance.timing.navigationStart + (ι===undefined? performance.now() : ι) )/1e3
+make_audio_buffer ← url=> Π((yes,no)=>{ req ← new XMLHttpRequest(); req.open('GET',url); req.responseType = 'arraybuffer'; req.onload = => AC.decodeAudioData(req.response,yes,no); req.onerror = no; req.send() })
+loop_gapless_e_play_e_volume ← url=>
+	make_audio_buffer(url).then(buffer=>{
+		a ← AC.createBufferSource(); a.buffer = buffer; a.loop = true; a.loopStart = 0.1; a.loopEnd = buffer.duration-0.1
+		b ← AC.createGain()
+		a.connect(b); b.connect(AC.destination)
+		a.start()
+		r ← def({},'volume',{ get(){↩ b.gain.value }, set(ι){ b.gain.value = ι } })
+		r.volume = 0
+		↩ r })
+
+perf_now ← ι=> ( performance.timing.navigationStart + (ι===∅? performance.now() : ι) )/1e3
 mk_img ← (X,Y)=>{
 	ui8c ← new Uint8ClampedArray(X*Y*4)
 	dv ← new DataView(ui8c.buffer)
 	↩ {
 	X, Y, ImageData:new ImageData(ui8c,X,Y),
-	get(x,y){↩ dv.getUint32( (y*@.X + x)*4 ) },
-	set(x,y,ι){ dv.setUint32( (y*@.X + x)*4, Tnum(ι)? ι : color(ι).i() ) },
+	get(x,y){↩ dv.getUint32( (y*X + x)*4 ) },
+	set(x,y,ι){ dv.setUint32( (y*X + x)*4, Tnum(ι)? ι : color(ι).i ) },
 	clear(){ ui8c.fill(0) }
 	} }
 
@@ -43,41 +69,39 @@ timing ← []
 do_timing ← ι=>{
 	at ← perf_now()
 	timing.push({at,ι})
-	for(i←0;i<timing.length;i++) if (timing[i].at >= at-5) break; timing.splice(0,i)
+	for(i←0;i<timing.‖;i++) if( timing[i].at >= at-5 ) break ;timing.splice(0,i)
 	effective_len ← at - timing[0].at
-	$('.fps').html(`fps: ${timing.filter(ι=> ι.ι==='frame').length / effective_len |0}<br>tps: ${timing.filter(ι=> ι.ι==='tick').length / effective_len |0}`)
+	$('.fps').html(`fps: ${timing.filter(.ι==='frame')['‖'] / effective_len |0}<br>tps: ${timing.filter(.ι==='tick')['‖'] / effective_len |0}`)
 	}
-frame_done ← ()=> do_timing('frame')
-tick_done ← ()=> do_timing('tick')
+frame_done ← => do_timing('frame')
+tick_done ← => do_timing('tick')
 
-norm_eq ← l=>{ numeric.subeq(l,l[0]); numeric.diveq(l,l[-1]); ↩ l }
-interpolate_mouse_places ← (ι,L)=> 0?0
-	: ι.length===0? []
-	: ι.length===1? _.range(L).map(()=> [ι[0].x,ι[0].y])
-	: numeric.spline( norm_eq(ι.map(ι=> ι.time_nonstandard)), ι.map(ι=> [ι.x,ι.y]) )
+norm_eq ← l=>{ numeric.subeq(l,l[0]) ;numeric.diveq(l,l[-1]) ;↩ l }
+interpolate_mouse_places ← (ι,L)⇒
+	: ι.‖===0? []
+	: ι.‖===1? ⋯(L).map(=> [ι[0].x,ι[0].y])
+	: numeric.spline( norm_eq(ι.map(.time_nonstandard)), ι.map(ι=> [ι.x,ι.y]) )
 		.at(numeric.linspace(0,1,L))
 
-interpolate_colors ← (colors,x)=>{ x *= colors.length; i ← x|0; r ← x-i; ↩ colors[i%colors.length].mix(colors[(i+1)%colors.length], 1-r) }
-shake_luminosity ← ι=>{ bright ← ( random()*(0.1 - (-0.1)) - 0.1 ) + 1; ↩ color.rgb(ι.rgb().color.map(ι=> ( bright <= 1? ι * bright : 255 - (255 - ι) * (1/bright) )|0)) } // ι + (255 - ι) * (bright - 1)
+shake_luminosity ← ι=>{ bright ← ( random()*(0.1 - (-0.1)) - 0.1 ) + 1; ↩ color.rgb(ι.rgb().color.map(ι=> ( bright <= 1? ι * bright : 255 - (255 - ι) * (1/bright) )|0)) } # ι + (255 - ι) * (bright - 1)
 
-convert ← { rgb:{}, xyz:{}, lab:{}, }
+convert ← { rgb:{}, xyz:{}, lab:{}, luv:{}, }
 convert.rgb.xyz = rgb=>{
 	[r,g,b] ← rgb.map(ι=> ι/255)
-		.map(ι=> ι > 0.04045? pow((ι + 0.055) / 1.055, 2.4) : ι/12.92 ) // assume sRGB
+		.map(ι=> ι > 0.04045? ((ι + 0.055) / 1.055)**2.4 : ι/12.92 ) # assume sRGB
 	↩ [
 		r*0.4124 + g*0.3576 + b*0.1805,
 		r*0.2126 + g*0.7152 + b*0.0722,
 		r*0.0193 + g*0.1192 + b*0.9505,
 		].map(ι=> ι*100) }
-convert.xyz.lab = xyz=>{
-	[x,y,z] ← xyz
+convert.xyz.lab = xyz=>{ [x,y,z] ← xyz
 	x /= 95.047; y /= 100; z /= 108.883
-	[x,y,z] ← [x,y,z].map(ι=> ι > 0.008856? pow(ι, 1/3) : 7.787*ι + 16/116 )
+	[x,y,z] ← [x,y,z].map(ι=> ι > 0.008856? ι**(1/3) : 7.787*ι + 16/116 )
 	↩ [ (116 * y) - 16, 500 * (x - y), 200 * (y - z) ] }
-convert.lab.xyz = lab=>{
-	[l,a,b] ← lab
+convert.lab.xyz = lab=>{ [l,a,b] ← lab
+	# sRGB: L ∈ [0,100] a ∈ [-85,97] b ∈ [-106,94]
 	y ← (l + 16) / 116; x ← a / 500 + y; z ← y - b / 200
-	[x,y,z] ← [x,y,z].map(ι=>{ ι2 ← pow(ι,3); ↩ ι2 > 0.008856 ? ι2 : (ι - 16 / 116) / 7.787 })
+	[x,y,z] ← [x,y,z].map(ι=>{ ι2 ← ι**3; ↩ ι2 > 0.008856 ? ι2 : (ι - 16/116) / 7.787 })
 	x *= 95.047; y *= 100; z *= 108.883
 	↩ [x,y,z] }
 convert.xyz.rgb = xyz=>{
@@ -85,122 +109,135 @@ convert.xyz.rgb = xyz=>{
 	r ← x* 3.2406 + y*-1.5372 + z*-0.4986
 	g ← x*-0.9689 + y* 1.8758 + z* 0.0415
 	b ← x* 0.0557 + y*-0.2040 + z* 1.0570
-	↩ [r,g,b].map(ι=> ι > 0.0031308? 1.055*pow(ι, 1/2.4) - 0.055 : ι*12.92 ) // assume sRGB
-		// .map(ι=> min(max(0,ι),1))
+	↩ [r,g,b].map(ι=> ι > 0.0031308? 1.055*ι**(1/2.4) - 0.055 : ι*12.92 ) # assume sRGB
+		# .map(ι=> min(max(0,ι),1))
 		.map(ι=> ι*255) }
 
-$(document).ready(()=>{
-// -------------------------------------------------------------------------- //
+################################################################################
+$(document).ready(=>{
+################################################################################
 SAND_PER_TICK ← 25
-TOOL_LENGTH ← 5//30 // seconds
+TOOL_LENGTH ← 5# 30 # seconds
+
+frame_pool ← Set()
 
 picked_colors←; set_picked_colors(['#800','#666','#fff'])
-tool_time ← 0; tool_length ← ()=> TOOL_LENGTH * 60/*fps*/ * SAND_PER_TICK * picked_colors.length
-gen_color ← ()=> shake_luminosity(interpolate_colors(picked_colors, (tool_time++) / tool_length() % 1))
+tool_time ← 0; tool_length ← => TOOL_LENGTH * 60/*fps*/ * SAND_PER_TICK * picked_colors.‖
+gen_color ← => shake_luminosity(color.interpolate_0(picked_colors, (tool_time++) / tool_length() % 1))
 
-// -------------------------------------------------------------------------- //
+sound ← (=>{
+	a←; loop_gapless_e_play_e_volume('pink_noise.mp3').then(ι=> a = ι)
+	↩ {
+	fade_out: => frame_pool.add(λ self(){ if (!a) ↩; a.volume *= 0.9; if (a.volume < 0.01){ a.volume = 0; frame_pool.delete(self) } }),
+	adjust_volume: ι=> a &&( a.volume = min(max(0, a.volume + (ι - a.volume)*0.175 ),1) ),
+	} })()
+
+################################################################################
 λ set_color_picker_icon(){
 	d ← $('.chooser').css('width').match(/^\d+/)[0]|0
-	$('.chooser').html( picked_colors.map((col,i,l)=>{ L ← l.length; d2 ← round(d * (L-i)/L /2)*2; ↩ $('<div class="chooser_elem">').css({width:d2+'px',height:d2+'px','background-color':col.string()}) }) )
+	$('.chooser').html( picked_colors.map((col,i,l)=>{ L ← l.‖; d2 ← round(d * (L-i)/L /2)*2; ↩ $('<div class="chooser_elem">').css({width:d2+'px',height:d2+'px','background-color':col.string()}) }) )
 	}
 λ set_picked_colors(ι){ picked_colors = ι.map(color.X); set_color_picker_icon() }
 
-$('.chooser').click(()=>{ colorset.show() })
+$('.chooser').click(=>{ colorset.show() })
 $('.colorset > canvas').click(e=>{
 	t ← $('.colorset > canvas').offset()
 	set_picked_colors([colorset().get({ x:e.pageX-t.left, y:e.pageY-t.top, time_nonstandard:e.timeStamp/1e3 })])
 	colorset.hide()
 	})
 
-$('.sandbox > canvas').map(λ(){ @.width = @.clientWidth; @.height = @.clientHeight })
+sand_world ← (=>{
+	canvas ← $('.sandbox > canvas')[0]
 
-sand_canvas ← $('.sandbox > canvas')
+	mouse_places ← []
+	on_because←;
+	go_on ← e=>{ mouse_places.push(get_mouse_pos(e)); $(canvas).on('mousemove',e=>{ mouse_places.push(get_mouse_pos(e)) }) }
+	go_off ← =>{ mouse_places = []; $(canvas).off('mousemove') }
+	$(canvas)
+		.mousedown(e=>{ on_because = 'mousedown'; go_on(e) })
+		.mouseup(go_off)
+		.mouseenter(e=>{ ((e.buttons&0x1) || on_because==='dblclick') && go_on(e) })
+		.mouseleave(go_off)
+		.dblclick(e=>{ on_because = 'dblclick'; go_on(e) })
 
-// https://api.jquery.com/category/events/mouse-events/
-mouse_places ← []
-sand_canvas.mousemove(e=>{ t ← sand_canvas.offset(); mouse_places.push({ x:e.pageX-t.left, y:e.pageY-t.top, time_nonstandard:e.timeStamp/1e3 }) })
+	# time_at_last ← perf_now()
+	state_init ← =>{
+		shape ← { X:canvas.clientWidth, Y:canvas.clientHeight }
+		buffer←;
+		particles ← []
+		voxel_states ← (=>{
+			vk ← ['empty','static','in_air','stacking']
+			kv ← _(vk).pairs().map(ι=>[ι[1],ι[0]|0])._.object()
+			↩ {
+			ι: new Uint8Array(shape.X*shape.Y),
+			get(x,y){↩ vk[ 0<=x && x<shape.X && 0<=y && y<shape.Y? @.ι[y*shape.X+x] : 1 ] },
+			set(x,y,ι){ if (0<=x && x<shape.X && 0<=y && y<shape.Y) @.ι[y*shape.X+x] = kv[ι] },
+			} })()
+		canvas.width = shape.X ;canvas.height = shape.Y
+		↩ { shape, buffer, particles, voxel_states, } }
 
-shape ← { X:sand_canvas[0].width, Y:sand_canvas[0].height }
-sand_world ← (λ(){
-	buffer←;
-	// time_at_last ← perf_now()
-	particles ← []
-	voxel_states ← (λ(){
-		vk ← ['empty','static','in_air','stacking']
-		kv ← vk._.pairs().map(ι=>[ι[1],ι[0]|0])._.object()
-		↩ {
-		ι: new Uint8Array(shape.X*shape.Y),
-		get(x,y){↩ vk[ 0<=x && x<shape.X && 0<=y && y<shape.Y? @.ι[y*shape.X+x] : 1 ] },
-		set(x,y,ι){ if (0<=x && x<shape.X && 0<=y && y<shape.Y) @.ι[y*shape.X+x] = kv[ι] },
-		} })()
+	state ← state_init()
 
-	find_noncolliding_y ← (xi,y)=>{ yi ← round(y)
-		if (yi <= 0) ↩ 0
-		if (!(yi < shape.Y)) yi = y = shape.Y - 1
-		for(;;){ t ← voxel_states.get(xi,yi); if (t==='empty' || t==='in_air') ↩ y; if (yi <= 0) ↩ 0; y -= 1; yi -= 1 }
+	find_noncolliding_y ← (xi,y)=>{ yi ← round(y); {shape,voxel_states} ← state
+		if (!(0 <= yi) || yi===0) yi = y = 0
+		if (!(yi < shape.Y)) ↩ shape.Y - 1
+		for(;;){ t ← voxel_states.get(xi,yi); if (t==='empty' || t==='in_air') ↩ y; if (!(yi < shape.Y)) ↩ shape.Y - 1; y += 1; yi += 1 }
 		}
-	find_noncolliding_y_top ← (xi,y)=>{ yi ← round(y)
-		if (yi <= 0) ↩ 0
-		if (!(yi < shape.Y)) yi = y = shape.Y - 1
-		for(;;){ t ← voxel_states.get(xi,yi); if (t==='empty') ↩ y; if (yi <= 0) ↩ 0; y -= 1; yi -= 1 }
-		}
 
-	mk_particle ← pos=>{
-		y1 ← find_noncolliding_y(pos.x,pos.y)
-		y2 ← find_noncolliding_y_top(pos.x,pos.y)
-		new_y ← y1*0.9 + y2*0.1
+	mk_particle ← (pos,color)=>{ {shape,particles} ← state
+		new_y ← find_noncolliding_y(pos.x,pos.y)
 		p ← {
 			status:'',
-			color: gen_color().i(),
+			color: color || gen_color().i,
 			x: max(0,min(shape.X,pos.x)),
-			y: max(0,min(shape.Y,new_y)),
+			y: max(0,min(shape.Y,new_y)) + (new_y===pos.y? 0 : 1),
 			vx: (random() - 0.5) * 3,
-			vy: -( random()*2 + ((new_y >= pos.y-1)? 0 : 6 + (pos.y-new_y) / (shape.Y/7)) ),
+			vy: random()*2 + (new_y===pos.y? 0 : 6 + 7 * (new_y-pos.y)/shape.Y),
 			}
 		particles.push(p)
 		place_particle(p)
 		}
-	take_particle ← p=> voxel_states.get(round(p.x),round(p.y))==='static' || voxel_states.set(round(p.x),round(p.y),'empty')
-	place_particle ← p=>{ low__0←;
+	take_particle ← p=>{ {voxel_states} ← state; ↩ voxel_states.get(round(p.x),round(p.y))==='static' || voxel_states.set(round(p.x),round(p.y),'empty') }
+	place_particle ← p=>{ low__0←; {voxel_states} ← state
 		x ← round(p.x); y ← round(p.y)
-		if (p.vy < 0)
+		if (p.vy > 0)
 			p.status = 'in_air'
-		else if((low__0=voxel_states.get(x+0,y+1))==='empty' || low__0==='in_air')
+		else if((low__0=voxel_states.get(x+0,y-1))==='empty' || low__0==='in_air')
 			p.status = 'in_air'
-		else if(low__0==='static' && voxel_states.get(x-1,y+1)==='static' && voxel_states.get(x+1,y+1)==='static')
+		else if(low__0==='static' && voxel_states.get(x-1,y-1)==='static' && voxel_states.get(x+1,y-1)==='static')
 			p.status = 'static'
 		else
 			{ p.vy = 0; p.status = 'stacking' }
 		voxel_states.set(x,y,p.status)
 		}
 
-	run_physics_tick ← ()=>{t←;
+	run_physics_tick ← =>{t←; {shape,particles,voxel_states} ← state
 		count_ground_hits ← 0
-		for (var p of particles){
+		for(p← of particles){
 			if(p.status==='in_air') {
 				take_particle(p)
 				p.x += p.vx; p.y += p.vy
 				if (!(0 <= p.x && p.x < shape.X)){ b ← p.x < 0? 0 : shape.X-1; p.x = b - (p.x - b); p.vx *= -1 }
 				p.y = find_noncolliding_y(round(p.x),p.y)
-				p.vy += 0.8 // gravity
-				p.vx *= 0.999 // friction
+				p.vy -= 0.8 # gravity
+				p.vx *= 0.999 # friction
 				place_particle(p)
-				if((t=voxel_states.get(round(p.x),p.y + 1))==='static' || t==='stacking') count_ground_hits++
+				if(p.status==='static' || p.status==='stacking') count_ground_hits++
 				}
 			else if(p.status==='stacking') {
 				find_drop_point ← p=>{
-					if(p.y >= shape.Y) ↩;
-					tx ← { l:round(p.x) - 1, r:round(p.x) + 1 }
-					ty ← round(p.y) + 1
+					if(!(0 <= p.y)) ↩;
+					tx ← { l:round(p.x)-1, r:round(p.x)+1 }
+					ty ← round(p.y)-1
 					found ← { l:!(0<=tx.l), r:!(tx.r<shape.X) }
-					for (var c of ['l','r']){
-						p_below ← !found[c]? voxel_states.get(tx[c],ty) : null
+					for(c← of ['l','r']){
+						p_below ← !found[c]? voxel_states.get(tx[c],ty) : ∅
 						if(!found[c]) found[c] = p_below!=='empty' && p_below!=='in_air'
 						}
 					if(found.l && found.r) ↩;
 					ty_ ← {l:ty,r:ty}
-					for(;ty < shape.Y;ty++) {
-						for (var c of ['l','r'])
+					for(;0 <= ty;ty--) {
+						for(c← of ['l','r'])
 							if(!found[c]) {
 								ty_[c] = ty
 								p_below ← voxel_states.get(tx[c],ty)
@@ -209,104 +246,113 @@ sand_world ← (λ(){
 							}
 						if(found.l && found.r) break
 						}
-					if(ty===shape.Y) for (var c of ['l','r']) if(!found[c]) { found[c] = true; ty_[c] = shape.Y }
+					if(ty===-1) for(c← of ['l','r']) if(!found[c]) { found[c] = true; ty_[c] = -1 }
 					if(found.l && found.r) {
-						↩ ty_.l > ty_.r || ty_.l===ty_.r && p.vx < 0?
-							{ x: p.x - 1, y: ty_.l - 1 }
-							: { x: p.x + 1, y: ty_.r - 1 }
+						↩ ty_.l < ty_.r || ty_.l===ty_.r && p.vx < 0?
+							{ x:p.x-1, y:ty_.l+1 }
+							: { x:p.x+1, y:ty_.r+1 }
 					}
-					for (var c of ['l','r']) if(found[c]) ↩ { x: p.x + (c==='l'? -1 : 1), y: ty_[c] - 1 }
+					for(c← of ['l','r']) if(found[c]) ↩ { x: p.x + (c==='l'? -1 : 1), y: ty_[c]+1 }
 					}
+				take_particle(p)
 				if(t=find_drop_point(p)) {
-					take_particle(p)
 					p.x = t.x; p.y = t.y
 					if (!(0 <= p.x && p.x < shape.X)) p.x = min(max( 0,p.x),shape.X )
-					place_particle(p)
 					}
+				place_particle(p)
 				}
 			}
 		tick_done()
 		↩ {count_ground_hits} }
 
 	↩ {
-	run_physics_to(now){t←;
-		// fn onFlowBegin() : void
-		// 	_sound.fadeIn();
+	mk_particle,
+	run_physics_to(now){t←; {shape,particles} ← state
+		# tick_length ← 1/50
+		# ticks ← floor((now - time_at_last) / tick_length)
+		# time_at_last += ticks * tick_length
+		# if (ticks > 7){ console.log('too many ticks:',ticks); ticks = 7 }
+		# for(ⁱ←0;ⁱ<ticks;ⁱ++){ ... }
 
-		// _channel = _sound.play(26,2147483647,_soundTransform); // _soundTransform is how the volume happens
-		// // public fn play(startTime = 0, loops = 0, sndTransform = null)
-
-		// fn adjustVolume(volume) : void
-		//    dVolume ← volume + _fadeInVolume - _volume;
-		//    @.volume = @.volume + dVolume * 0.175;
-
-		// fn fadeIn() : void
-		//    _fadeInVolume = 0;
-		//    TweenLite.to @,0.25,
-		//       "_fadeInVolume":0.7,
-		//       "onComplete"
-		//          _fadeInVolume = 0;
-
-		// fn fadeOutStep() : void
-		//    volume = volume * 0.9;
-		//    if(volume < 0.01)
-		//       EnterFramePool.remove(fadeOutStep);
-		//       volume = 0;
-
-		// tick_length ← 1/50
-		// ticks ← floor((now - time_at_last) / tick_length)
-		// time_at_last += ticks * tick_length
-		// if (ticks > 7){ cn.log('too many ticks:',ticks); ticks = 7 }
-		// for(var ⁱ=0;ⁱ<ticks;ⁱ++){ ... }
-
-		for (var pos of interpolate_mouse_places( (t = mouse_places, mouse_places = t.slice(-1), t), SAND_PER_TICK ))
-			mk_particle({ x:round(pos[0]), y:round(pos[1]) })
+		for(pos← of interpolate_mouse_places( (t = mouse_places, mouse_places = t.slice(-1), t), SAND_PER_TICK ))
+			mk_particle({ x:round(pos[0]), y:shape.Y-1-round(pos[1]) })
 		{count_ground_hits} ← run_physics_tick()
-		// particles = particles.filter(ι=> ι.status!=='static')
-		// if (particles.length===0){ _sound.fadeOut(); return }
-		// else _sound.adjustVolume(count_ground_hits / SAND_PER_TICK / 2)
+		# particles = particles.filter(.status!=='static')
+		if(! particles.filter(.status!=='static').‖ ) sound.fade_out()
+		else sound.adjust_volume(count_ground_hits / SAND_PER_TICK / 2)
 		},
-	render(ctx2d){
+	render(now){
+		{shape,buffer,particles,voxel_states} ← state
+
+		if (≉(shape,{ X:canvas.clientWidth, Y:canvas.clientHeight })){
+			old ← state
+			state = state_init(); {shape,buffer,particles,voxel_states} ← state
+			particles = state.particles = old.particles.filter(ι=> 0<=round(ι.x) && round(ι.x)<shape.X && 0<=round(ι.y) && round(ι.y)<shape.Y)
+			for(y←0;y<min(shape.Y,old.shape.Y);y++)
+			for(x←0;x<min(shape.X,old.shape.X);x++)
+				voxel_states.set(x,y,old.voxel_states.get(x,y))
+			}
+
+		@.run_physics_to(now)
+
 		if (!buffer) buffer = mk_img(shape.X,shape.Y); else buffer.clear()
-		for(var p of particles) buffer.set( round(p.x),round(p.y), p.color )
-		ctx2d.putImageData(buffer.ImageData,0,0)
+		for(p← of particles) buffer.set( round(p.x),shape.Y-1-round(p.y), p.color )
+		ctx ← canvas.getContext('2d')
+		ctx.putImageData(buffer.ImageData,0,0)
 		},
 		} })()
 
-colorset ← _.memoize(λ(){
+# colorset ← _.memoize(λ(){
+# 	r ← {}
+# 	r.$ = $('.colorset')
+# 	r.$canvas = r.$.children('canvas')
+# 	r.canvas = r.$canvas[0]
+# 	;[r.cX,r.cY] = [r.canvas.width,r.canvas.height] = [r.$canvas.width()>>3,r.$canvas.height()>>2]
+# 	r.buffer = mk_img(r.cX,r.cY)
+
+# 	for (y←0;y<r.cY;y++)
+# 	for (x←0;x<r.cX;x++){
+# 		L ← 100 * (1-y/r.cY)
+# 		h_i ← x/r.cX
+# 		a ← 128 * cos(h_i*τ) * 0.5
+# 		b ← 128 * sin(h_i*τ) * 0.5
+# 		c ← convert.xyz.rgb(convert.lab.xyz([L,a,b])).map(ι=> ι<0? 0 : ι>0xff? 0xff : ι|0)
+# 		r.buffer.set(x,y,c)
+# 		}
+# 	ctx2d ← r.canvas.getContext('2d')
+# 	ctx2d.putImageData(r.buffer.ImageData,0,0)
+# 	r.get = ({x,y})=>{
+# 		x = x / r.$canvas.width() * r.cX |0
+# 		y = y / r.$canvas.height() * r.cY |0
+# 		t ← r.buffer.get(x,y)
+# 		if (Tnum(t)){ r_ ← color(t>>>8); r_.valpha = (t&0xff)/0xff; ↩ r_ }else ↩ color(t) }
+# 	↩ r })
+colorset ← _.once(=>{
 	r ← {}
 	r.$ = $('.colorset')
 	r.$canvas = r.$.children('canvas')
 	r.canvas = r.$canvas[0]
-	;[r.cX,r.cY] = [r.canvas.width,r.canvas.height] = [r.$canvas.width()>>3,r.$canvas.height()>>2]
+	# ;[r.cX,r.cY] = [r.canvas.width,r.canvas.height] = [r.$canvas.width()<<1,r.$canvas.height()<<1]
+	;[r.cX,r.cY] = [r.canvas.width,r.canvas.height] = [r.$canvas.width()<<1,r.$canvas.height()*2/3|0]
 	r.buffer = mk_img(r.cX,r.cY)
+	squish ← 1
+	columns ←
+	_u.range(0,128*128,squish).map(color_i=>{
+		column_pair ←
+		_u.range(color_i,color_i+squish).map(color_i=>{
+			[a,b] ← hilbert_curve.index_to_point(2,7,color_i).map(ι=>ι/127)
+			a = a*(94+106)-85-((94+106)-(97+85))/2; b = b*(94+106)-106
+			↩ _u.range(100+1).map(L=>{ t ← convert.xyz.rgb(convert.lab.xyz([L,a,b])); ↩ !t.every(ι=> 0<=ι&&ι<=0xff)? ∅ : t.map(ι=>ι|0) }) })
+		↩ _.zip(…column_pair)._.flatten(true) })
+	oi ← 0
+	columns.filter(.some(ι=>ι)).forEach(c=>{
+		x ← oi % r.cX |0
+		y_ ← (oi / r.cX |0) * c.‖
+		for (L←0;L<c.‖;L++)
+			{ y ← y_ + c.‖-1-L; if (y < r.cY && c[L]) r.buffer.set( x,y, c[L] ) }
+		oi++
+		})
 
-	// $('.colorset > canvas').map(λ(){ @.width = @.clientWidth>>4; @.height = @.clientHeight>>3 })
-	// canvas ← $('.colorset > canvas')[0]
-	// shape/ ← { X:canvas.width, Y:canvas.height }
-	// colorset_buf ← mk_img(shape.X,shape.Y)
-	// cs_pix ← new Uint32Array(colorset_buf.ι.buffer)
-
-	// oi←0; ci←0 // output i, color i
-	// for (;ci<256*256;ci++){
-	// 	[a,b] ← hilbert_curve.index_to_point(2,8,ci).map(ι=> ι-127.5)
-	// 	LL ← 101
-	// 	column ← _.range(LL).map(L=>{ t ← convert.xyz.rgb(convert.lab.xyz([L,a,b])); ↩ t.some(ι=> ι<0 || ι>0xff )? null : t.map(ι=>ι|0) })
-	// 	if (column.every(ι=>!ι)) continue
-	// 	x ← oi % r.cX
-	// 	y_ ← (oi / r.cX |0) * LL*2
-	// 	for (L←0;L<LL;L++)
-	// 		{ r.buffer.set( x,y_+(LL-L)*2, column[L] ); r.buffer.set( x,y_+(LL-L)*2+1, column[L] ) }
-	// 	oi++ }
-	for (y←0;y<r.cY;y++)
-	for (x←0;x<r.cX;x++){
-		L ← 100 * (1-y/r.cY)
-		h_i ← x/r.cX
-		a ← 128 * cos(h_i*τ) * 0.5
-		b ← 128 * sin(h_i*τ) * 0.5
-		c ← convert.xyz.rgb(convert.lab.xyz([L,a,b])).map(ι=> ι<0? 0 : ι>0xff? 0xff : ι|0)
-		r.buffer.set(x,y,c)
-		}
 	ctx2d ← r.canvas.getContext('2d')
 	ctx2d.putImageData(r.buffer.ImageData,0,0)
 	r.get = ({x,y})=>{
@@ -315,16 +361,16 @@ colorset ← _.memoize(λ(){
 		t ← r.buffer.get(x,y)
 		if (Tnum(t)){ r_ ← color(t>>>8); r_.valpha = (t&0xff)/0xff; ↩ r_ }else ↩ color(t) }
 	↩ r })
-colorset.show = ()=>{ $('.colorset').css({display:'unset'}); colorset() }
-colorset.hide = ()=>{ $('.colorset').css({display:'none'}) }
+colorset.show = =>{ $('.colorset').css({display:'unset'}); colorset() }
+colorset.hide = =>{ $('.colorset').css({display:'none'}) }
 
 requestAnimationFrame(λ self(now){ now = perf_now(now)
-	sand_world.run_physics_to(now)
-	sand_world.render(sand_canvas[0].getContext('2d'))
+	frame_pool.forEach(f=> f())
+	sand_world.render(now)
 	frame_done(); requestAnimationFrame(self) })
 
-// -------------------------------------------------------------------------- //
+################################################################################
 })
 
-// https://thisissand.com/
-// file://localhost/Users/home/file/code/scratch/sand2/it.html
+# http://alice.sh/thisisoursand/
+# https://commons.wikimedia.org/wiki/File:SRGB_gamut_within_CIELAB_color_space_isosurface.png
