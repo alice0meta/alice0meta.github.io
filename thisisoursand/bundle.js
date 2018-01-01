@@ -1,28 +1,28 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 // ---------------------------------- utils --------------------------------- //
-var graycode = ι=> ι ^ (ι>>1)
+var graycode = ι=> ι ** (ι>>1)
 graycode['⁻¹'] = ι=>{
 	if (ι===0) return ι
 	var m = ceil(log2(ι)) + 1
-	var i = x; for(var j=1;j<m;j++) i ^= x>>j
+	var i = x; for(var j=1;j<m;j++) i **= x>>j
 	return i }
 var rrot = (x,i,x_bit_width)=>{ var L = x_bit_width
-	x < pow(2,L) || !function(){throw Error("‽")}()
+	x < pow(2,L) || _interrobang_()
 	i %= L
 	x = (x >> i) | (x << L-i)
 	return x & pow(2,L)-1 }
 var lrot = (x,i,x_bit_width)=>{ var L = x_bit_width
-	x < pow(2,L) || !function(){throw Error("‽")}()
+	x < pow(2,L) || _interrobang_()
 	i %= L
 	x = (x<<i) | (x >> L-i)
 	return x & pow(2,L)-1 }
 var tsb = (x,x_bit_width)=>{ var L = x_bit_width // trailing set bits
-	x < pow(2,L) || !function(){throw Error("‽")}()
+	x < pow(2,L) || _interrobang_()
 	for(var i = 0; (x&1)!==0 && i <= L; i++) x >>= 1
 	return i }
 var setbit = (x,w,i,b)=>{ // sets bit i in an integer x of width w to b
-	b===0 || b===1 || !function(){throw Error("‽")}()
-	i < w || !function(){throw Error("‽")}()
+	b===0 || b===1 || _interrobang_()
+	i < w || _interrobang_()
 	var m = pow(2,w-i-1)
 	return b? x | m : x & ~m }
 var bitrange = (x,width,start,end)=> // Extract a bit range as an integer. (start, end) is inclusive lower bound, exclusive upper bound.
@@ -30,18 +30,18 @@ var bitrange = (x,width,start,end)=> // Extract a bit range as an integer. (star
 
 // --------------------------------- hilbert -------------------------------- //
 var transform = (entry,direction,width,x)=>{
-	x < pow(2,width) || !function(){throw Error("‽")}()
-	entry < pow(2,width) || !function(){throw Error("‽")}()
-	return rrot(x^entry, direction+1, width) }
+	x < pow(2,width) || _interrobang_()
+	entry < pow(2,width) || _interrobang_()
+	return rrot(x**entry, direction+1, width) }
 transform['⁻¹'] = (entry,direction,width,x)=>{
-	x < pow(2,width) || !function(){throw Error("‽")}()
-	entry < pow(2,width) || !function(){throw Error("‽")}()
-	return lrot(x, direction+1, width) ^ entry
+	x < pow(2,width) || _interrobang_()
+	entry < pow(2,width) || _interrobang_()
+	return lrot(x, direction+1, width) ** entry
 	// There is an error in the Hamilton paper's formulation of the inverse transform in Lemma 2.12. The correct restatement as a transform is as follows:
 	// ↩ transform(rrot(entry, direction+1, width), width-direction-2, width, x)
 	}
 var direction = (x,n)=>{
-	x < pow(2,n) || !function(){throw Error("‽")}()
+	x < pow(2,n) || _interrobang_()
 	return x===0? 0
 		: x%2===0? tsb(x-1,n) % n
 		: tsb(x,n) % n }
@@ -65,7 +65,7 @@ var index_to_point = (dimension,order,h)=>{
 			b = bitrange(l, dimension, j, j+1)
 			p[j] = setbit(p[j], order, i, b)
 			}
-		e ^= lrot(entry(w), d+1, dimension)
+		e **= lrot(entry(w), d+1, dimension)
 		d = (d + direction(w, dimension) + 1)%dimension
 		}
 	return p }
@@ -81,7 +81,7 @@ var point_to_index = (dimension,order,p)=>{
 			}
 		l = transform(e, d, dimension, l)
 		w = graycode['⁻¹'](l)
-		e = e ^ lrot(entry(w), d+1, dimension)
+		e = e ** lrot(entry(w), d+1, dimension)
 		d = (d + direction(w, dimension) + 1)%dimension
 		h = (h<<dimension)|w
 		}
@@ -89,21 +89,21 @@ var point_to_index = (dimension,order,p)=>{
 
 // ---------------------------------- fast ---------------------------------- //
 var fast_pti2 = (n,x,y)=>{
-	log2(n)%1===0 || !function(){throw Error("‽")}()
+	log2(n)%1===0 || _interrobang_()
 	var d = 0
 	for(var s=n/2;s>0;s/=2){
 		var rx = x&s > 0
 		var ry = y&s > 0
-		d += s*s * ((3*rx) ^ ry)
+		d += s*s * ((3*rx) ** ry)
 		if (ry===0) [x,y] = ( (rx===1? (x = s-1 - x, y = s-1 - y) : 0), [y,x] )
 		}
 	return d}
 var fast_itp2 = (n,d)=>{
-	log2(n)%1===0 || !function(){throw Error("‽")}()
+	log2(n)%1===0 || _interrobang_()
 	var x = 0; var y = 0
 		for(var s=1;s<n;s*=2){
 			var rx = 1 & (d/2)
-			var ry = 1 & (d^rx)
+			var ry = 1 & (d**rx)
 			;[x,y] = ry!==0? [x,y] :( (rx===1? (x = s-1 - x, y = s-1 - y) : 0), [y,x] )
 			x += s * rx
 			y += s * ry
@@ -442,7 +442,7 @@ requestAnimationFrame(function self(now){ now = perf_now(now)
 })
 
 // https://thisissand.com/
-// file://localhost/Users/home/file/code/scratch/sand2/index.html
+// file://localhost/Users/home/file/code/scratch/sand2/it.html
 
 },{"./hilbert_curve":1,"color":8,"numeric":10}],3:[function(require,module,exports){
 /* MIT license */
@@ -1401,11 +1401,10 @@ var conversions = require('./conversions');
 	conversions that are not possible simply are not included.
 */
 
-// https://jsperf.com/object-keys-vs-for-in-with-closure/3
-var models = Object.keys(conversions);
-
 function buildGraph() {
 	var graph = {};
+	// https://jsperf.com/object-keys-vs-for-in-with-closure/3
+	var models = Object.keys(conversions);
 
 	for (var len = models.length, i = 0; i < len; i++) {
 		graph[models[i]] = {
@@ -1488,6 +1487,8 @@ module.exports = function (fromModel) {
 
 
 },{"./conversions":3}],6:[function(require,module,exports){
+'use strict'
+
 module.exports = {
 	"aliceblue": [240, 248, 255],
 	"antiquewhite": [250, 235, 215],
@@ -1638,6 +1639,7 @@ module.exports = {
 	"yellow": [255, 255, 0],
 	"yellowgreen": [154, 205, 50]
 };
+
 },{}],7:[function(require,module,exports){
 /* MIT license */
 var colorNames = require('color-name');
@@ -1687,8 +1689,8 @@ cs.get.rgb = function (string) {
 		return null;
 	}
 
-	var abbr = /^#([a-fA-F0-9]{3})$/;
-	var hex = /^#([a-fA-F0-9]{6})$/;
+	var abbr = /^#([a-f0-9]{3,4})$/i;
+	var hex = /^#([a-f0-9]{6})([a-f0-9]{2})?$/i;
 	var rgba = /^rgba?\(\s*([+-]?\d+)\s*,\s*([+-]?\d+)\s*,\s*([+-]?\d+)\s*(?:,\s*([+-]?[\d\.]+)\s*)?\)$/;
 	var per = /^rgba?\(\s*([+-]?[\d\.]+)\%\s*,\s*([+-]?[\d\.]+)\%\s*,\s*([+-]?[\d\.]+)\%\s*(?:,\s*([+-]?[\d\.]+)\s*)?\)$/;
 	var keyword = /(\D+)/;
@@ -1696,20 +1698,31 @@ cs.get.rgb = function (string) {
 	var rgb = [0, 0, 0, 1];
 	var match;
 	var i;
+	var hexAlpha;
 
-	if (match = string.match(abbr)) {
-		match = match[1];
-
-		for (i = 0; i < 3; i++) {
-			rgb[i] = parseInt(match[i] + match[i], 16);
-		}
-	} else if (match = string.match(hex)) {
+	if (match = string.match(hex)) {
+		hexAlpha = match[2];
 		match = match[1];
 
 		for (i = 0; i < 3; i++) {
 			// https://jsperf.com/slice-vs-substr-vs-substring-methods-long-string/19
 			var i2 = i * 2;
 			rgb[i] = parseInt(match.slice(i2, i2 + 2), 16);
+		}
+
+		if (hexAlpha) {
+			rgb[3] = Math.round((parseInt(hexAlpha, 16) / 255) * 100) / 100;
+		}
+	} else if (match = string.match(abbr)) {
+		match = match[1];
+		hexAlpha = match[3];
+
+		for (i = 0; i < 3; i++) {
+			rgb[i] = parseInt(match[i] + match[i], 16);
+		}
+
+		if (hexAlpha) {
+			rgb[3] = Math.round((parseInt(hexAlpha + hexAlpha, 16) / 255) * 100) / 100;
 		}
 	} else if (match = string.match(rgba)) {
 		for (i = 0; i < 3; i++) {
@@ -1741,9 +1754,11 @@ cs.get.rgb = function (string) {
 		rgb[3] = 1;
 
 		return rgb;
+	} else {
+		return null;
 	}
 
-	for (i = 0; i < rgb.length; i++) {
+	for (i = 0; i < 3; i++) {
 		rgb[i] = clamp(rgb[i], 0, 255);
 	}
 	rgb[3] = clamp(rgb[3], 0, 1);
@@ -1792,8 +1807,18 @@ cs.get.hwb = function (string) {
 	return null;
 };
 
-cs.to.hex = function (rgb) {
-	return '#' + hexDouble(rgb[0]) + hexDouble(rgb[1]) + hexDouble(rgb[2]);
+cs.to.hex = function () {
+	var rgba = swizzle(arguments);
+
+	return (
+		'#' +
+		hexDouble(rgba[0]) +
+		hexDouble(rgba[1]) +
+		hexDouble(rgba[2]) +
+		(rgba[3] < 1
+			? (hexDouble(Math.round(rgba[3] * 255)))
+			: '')
+	);
 };
 
 cs.to.rgb = function () {
@@ -2219,8 +2244,8 @@ Color.prototype = {
 	mix: function (mixinColor, weight) {
 		// ported from sass implementation in C
 		// https://github.com/sass/libsass/blob/0e6b4a2850092356aa3ece07c6b249f0221caced/functions.cpp#L209
-		var color1 = this.rgb();
-		var color2 = mixinColor.rgb();
+		var color1 = mixinColor.rgb();
+		var color2 = this.rgb();
 		var p = weight === undefined ? 0.5 : weight;
 
 		var w = 2 * p - 1;
