@@ -12,7 +12,7 @@
 		p {font-family: monospace; margin: 0;}
 	</style>
 	<script>
-		Object.defineProperty(Object.prototype,'_',{get:function(){return _(this)}, configurable:true})
+		Object.defineProperty(Array.prototype,'_',{get:function(){return _(this)}, configurable:true})
 		var encode_entities = ι=> ι.replace(/[&"'<>]/g,ι=>0?0: {'&':'&amp;', '"':'&quot;', '\'':'&#39;', '<':'&lt;', '>':'&gt;'}[ι])
 		var decode_entities = ι=> {var t = document.createElement('textarea'); t.innerHTML = ι; return t.value}
 		var dl_pastebin = (ι,f)=> {
