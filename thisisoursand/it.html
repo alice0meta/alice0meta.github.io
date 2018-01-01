@@ -2,7 +2,7 @@
 	<title>this is our sand</title>
 	<style>
 		* { image-rendering:pixelated; }
-		canvas { width:100%; height:100%; }
+		canvas { width:100%; height:100%; display:block; }
 		body { margin:0; font-family:"Avenir Next"; }
 		
 		.center_childs { text-align:center; }
@@ -11,17 +11,17 @@
 		.sandbox { background:linear-gradient(to bottom,#e8e8e8,#c6c6c6); }
 		.chooser { top:14px; right:14px; position:absolute; width:58px; height:58px; display:flex; justify-content:center; align-items:center; }
 		.chooser_elem { border-radius:100%; box-shadow: 0 1px 0 rgba(0,0,0,0.1); position:absolute; }
+		.colorset { background-color:rgba(0,0,0,0.2); }
 
 		.fps { font-size:15px; margin:1em; position:fixed; pointer-events:none; }
-		.topnote { font-size:10px; margin:5px auto; position:absolute; }
+		.clone_note { font-size:10px; margin:5px auto; transform:translate(-50%); position:absolute; }
 	</style>
 	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 	<script src="bundle.js"></script>
 </head><body>
 	<div class="sandbox full_frame">
 		<div class="center_childs" style="width:100%;">
-			<span class="topnote">a <a href="https://thisissand.com/" target="_blank">Thisissand</a> clone</span>
+			<span class="clone_note">a <a href="https://thisissand.com/" target="_blank">Thisissand</a> clone</span>
 		</div>
 		<div class="fps"></div>
 		<a class="chooser"></a>

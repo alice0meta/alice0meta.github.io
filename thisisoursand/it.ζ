@@ -11,6 +11,7 @@
 // favicon
 
 // -------------------------------- builtins -------------------------------- //
+_ ← require('underscore')
 E ← window
 Object.defineProperty(Array.prototype,'_',{get:λ(){↩ _(@)}, configurable:true})
 Object.defineProperty(Array.prototype,'-1',{get(){↩ @.length<1? undefined : @[@.length-1] },set(ι){ @.length<1 || (@[@.length-1] = ι) }, configurable:true})
