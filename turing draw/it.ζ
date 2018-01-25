@@ -1,7 +1,7 @@
 ################################ prelude COPIED ################################
 Tnum ← ι=> typeof ι==='number'
 random ← λ(ι){↩ arguments.length===0? Math.random() : Tnum(ι)? random()*ι |0 : _u.sample(ι) }
-Time ← λ(ι){ r ← arguments.length===0? new Date() : ι instanceof Date? ι : new Date(Tnum(ι)? ι*1e3 : ι) ;r.toString = λ(){↩ util.inspect(@) } ;↩ r }
+Time ← λ(ι){ r ← arguments.length===0? new Date() : ι instanceof Date? ι : new Date(Tnum(ι)? ι*1e3 : ι) ;r.toString = λ(){↩ node.util.inspect(@) } ;↩ r }
 Object.defineProperty(Date.prototype,'i',{get(){↩ +@ / 1e3}})
 window.γ = window
 γ.Buffer = require('buffer').Buffer

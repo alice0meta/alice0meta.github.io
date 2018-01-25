@@ -2,13 +2,18 @@
 # use facebook api to get a list of your friends who also play this_is_our_sand
 # http://xirsys.com/ TURN server
 # bug: shit gets weird on the right
-# ciecam02 maybe? it's hard to tell how to do colors http://gramaz.io/d3-cam02/ https://en.wikipedia.org/wiki/Helmholtz%E2%80%93Kohlrausch_effect https://sites.google.com/site/clifframes/ciecam02plugin
 # favicon
 # if you click on an invisible area use a nearby color instead of black, also show which nearby color will be chosen
-# simple transition animations
+# simple animations
+
+################# color ################
+# use http://gramaz.io/d3-cam02/ 
+# does it fix https://en.wikipedia.org/wiki/Helmholtz%E2%80%93Kohlrausch_effect ?
 
 ################################### builtins ###################################
-E ← window
+global ← window
+γ ← global
+E ← γ
 E.𐅯Set = (…ι)=> new Set(ι)
 E._u = E._ = require('underscore')
 ⋯ ← ι=> _u.range(ι)
@@ -37,7 +42,6 @@ color.interpolate_0 = (c,x)=>{ x *= c.‖; i ← x|0; r ← x-i; ↩ c[i%c.‖].
 Object.defineProperty(color.prototype,'i',{get(){ ι ← @.rgb().color; ↩ ( ι[0]<<24 | ι[1]<<16 | ι[2]<<8 | 0xff )>>>0 }})
 
 ##################################### utils ####################################
-numeric ← require('numeric')
 hilbert_curve ← require('./hilbert_curve')
 AC ← new AudioContext()
 
@@ -76,6 +80,13 @@ do_timing ← ι=>{
 frame_done ← => do_timing('frame')
 tick_done ← => do_timing('tick')
 
+# {nk,norm∞_affine_sorted_E} ← numeric2
+# interpolate_mouse_places ← (ι,L)⇒
+# 	: ι.‖===0? []
+# 	: ι.‖===1? ⋯(L).map(=> [ι[0].x,ι[0].y])
+# 	: nk.spline( norm∞_affine_sorted_E(ι.map(.time_nonstandard)), ι.map(ι=> [ι.x,ι.y]) )
+# 		.at(nk.linspace(0,1,L))
+numeric ← require('numeric')
 norm_eq ← l=>{ numeric.subeq(l,l[0]) ;numeric.diveq(l,l[-1]) ;↩ l }
 interpolate_mouse_places ← (ι,L)⇒
 	: ι.‖===0? []
