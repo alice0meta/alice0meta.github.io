@@ -5,7 +5,7 @@
 </head><body>
 </body></html>
 <script>
-var animation_frame_loop = f=> window.requestAnimationFrame(now=> f(now/1e3, =>animation_frame_loop(f)))
+var animation_frame_loop = f=> window.requestAnimationFrame(now=> f(now/1e3, ()=>animation_frame_loop(f)))
 
 var cols = chroma.scale('red e8b907 green 1111ff c000e8 red'.split(' ')).mode('lab')
 
