@@ -35,7 +35,7 @@ update ← I=>{ for( i←0 ;i<I ;i++ ){
 	t𐑱p[head_at] = seen
 	x ← head_at % t𐑱p_s𐑲z[0]
 	y ← head_at / t𐑱p_s𐑲z[0] |0
-	switch( move ){ default: ‽
+	switch( move ){ default: ϟ()
 		;break ;case 0: x++ ;x += t𐑱p_s𐑲z[0] ;x %= t𐑱p_s𐑲z[0]
 		;break ;case 1: x-- ;x += t𐑱p_s𐑲z[0] ;x %= t𐑱p_s𐑲z[0]
 		;break ;case 2: y-- ;y += t𐑱p_s𐑲z[1] ;y %= t𐑱p_s𐑲z[1]

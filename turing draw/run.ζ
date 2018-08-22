@@ -1,7 +1,7 @@
 #!/usr/bin/env ζ
 
-shᵥ`mkdir -p .bin_𐅦𐅭𐅯𐅮𐅬`
-φ`.bin_𐅦𐅭𐅯𐅮𐅬/it.js`.text = ζ_compile(φ`it.ζ`.text)
-shᵥ`browserify .bin_𐅦𐅭𐅯𐅮𐅬/it.js -o bundle.js`
-shᵥ`rm -r .bin_𐅦𐅭𐅯𐅮𐅬`
+shᵥ`mkdir -p .bin_𐅦𐅭𐅯𐅮`
+φ`.bin_𐅦𐅭𐅯𐅮/it.js`.text = ζ_compile(φ`it.ζ`.text)
+shᵥ`browserify .bin_𐅦𐅭𐅯𐅮/it.js -o bundle.js`
+shᵥ`rm -r .bin_𐅦𐅭𐅯𐅮`
 go_to(`file:///~/code/alice0meta.github.io/turing%20draw/index.html`,{in_app:`chrome`})
