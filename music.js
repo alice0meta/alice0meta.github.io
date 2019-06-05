@@ -76,7 +76,7 @@ speak= ([x,y],s)=>{
 	s=s||{ stop:function(){ this._.gain.setTargetAtTime(0,0,.002) ;setTimeout(()=> this._.gain.value= 0 ,10) } }
 	// s=s||{ stop:function(){ this._.gain.value= 0 } }
 	// s=s||{ os:[] ,stop:function(){ this.os.map(_=> _.head.stop() ) } }
-	x= 1-x
+	// x= 1-x
 	var rt= 40* 2**(x*7)
 	y= (1-y/10) *softsound_interpolate.at(x)
 
@@ -141,6 +141,7 @@ function sound(e, i, t) {
 	if( t=='mouseup' ) a7771[i]&& a7771[i].stop() ;else a7771[i]= speak(w,a7771[i])
 	}
 
+TOUCHES= []
 a8855= {}
 function TouchHandler(e){ e.preventDefault() ;for(var t of for__touchlist(e)){
 	var p= [ t.pageX * devicePixelRatio
@@ -150,6 +151,7 @@ function TouchHandler(e){ e.preventDefault() ;for(var t of for__touchlist(e)){
 	    // w= [ t.pageX / document.body.clientWidth
 	    //    , t.pageY / document.body.clientHeight ]
 	    i= t.identifier
+	TOUCHES.push(w)
 	if( e.type==='touchstart' ) a8855[i]= speak(w,a8855[i])
 	else if( e.type==='touchend' ) a8855[i]&& a8855[i].stop()
 	else a8855[i]= speak(w,a8855[i])
